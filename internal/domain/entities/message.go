@@ -1,31 +1,30 @@
 package entities
 
 import (
+	"telegram/internal/domain"
 	"time"
 )
 
-// Message представляет сообщение из Telegram канала
 type Message struct {
-	ID        int64
-	ChannelID int64
-	Text      string
-	MediaURL  []string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	id int64
+	text string
+	createdAt time.Time
 }
 
-// NewMessage создает новое сообщение с валидацией
-func NewMessage(channelID int64, text string, createdAt time.Time) (*Message, error) {
+// создаем новое сообщение
+func NewMessage(id int64, text string, createdAt time.Time) (*Message, error) {
 
 	if text == "" {
-		//TODO: сделать ошибку 
-		// return nil, ErrInvalidMessage
+		return nil, domain.ErrMessageInvalidText
 	}
 
 	return &Message{
-		ChannelID: channelID,
-		Text:      text,
-		CreatedAt: createdAt,
-		UpdatedAt: time.Now(),
+		id: id,
+		text: text,
+		createdAt: time.Now(),
 	}, nil
+}
+
+func (m Message) GetText () string {
+	return m.text
 }

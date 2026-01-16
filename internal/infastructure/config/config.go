@@ -9,7 +9,6 @@ import (
 // Config содержит конфигурацию приложения
 type Config struct {
 	Telegram TelegramConfig
-	Database DatabaseConfig
 	Server   ServerConfig
 	Logger   LoggerConfig
 }
