@@ -5,8 +5,9 @@ import (
 	"log"
 	"os"
 	"telegram/internal/domain/entities"
-	"time"
+	"telegram/internal/infrastructure/tgapi"
 	"telegram/internal/presentation/cli"
+	"time"
 )
 
 func main() {
@@ -22,7 +23,8 @@ func main() {
 		log.Fatal("Не указаны параметры запуска")
 	}
 
-	// Проверить режим запуска (HTTP API или CLI)
+	tgapi.GetClientApi()
+
 	cliApp := cli.NewCliApp()
 	if err := cliApp.Run(os.Args[1:]); err != nil {
 		log.Fatalln(err.Error(), nil)
