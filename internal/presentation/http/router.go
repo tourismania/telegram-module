@@ -1,0 +1,36 @@
+package http
+
+import (
+	"log"
+	"github.com/gin-gonic/gin"
+)
+
+// Router конфигурирует маршруты приложения
+type Router struct {
+	engine  *gin.Engine
+	handler Handler
+}
+
+// NewRouter создает новый роутер
+func NewRouter(h Handler) *Router {
+	return &Router{
+		engine:  gin.Default(),
+		handler: h,
+	}
+}
+
+// Setup настраивает все маршруты
+func (r *Router) Setup() {
+
+	// API v1
+	v1 := r.engine.Group("/api/v1")
+	{
+		v1.POST("/webhook", r.handler.SaveWebhook)
+	};
+}
+
+// Run запускает HTTP сервер
+func (r *Router) Run(port string) error {
+	log.Println("starting HTTP server on " + port)
+	return r.engine.Run(":" + port)
+}
