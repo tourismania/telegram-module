@@ -3,11 +3,21 @@ package tgbotapi
 import (
 	"log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapiv5 "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func GetClientApi() {
-	bot, err := tgbotapi.NewBotAPI("MyAwesomeBotToken")
+type TgBotApiService struct {
+	token string
+}
+
+func NewTgBotApiService(t string) *TgBotApiService {
+	return &TgBotApiService{
+		token: t,
+	};
+}
+
+func (srvc *TgBotApiService) PrintUpdates() {
+	bot, err := tgbotapiv5.NewBotAPI(srvc.token)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -16,7 +26,7 @@ func GetClientApi() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	u := tgbotapi.NewUpdate(0)
+	u := tgbotapiv5.NewUpdate(1)
 	u.Timeout = 60
 
 	updates := bot.GetUpdatesChan(u)
@@ -25,10 +35,10 @@ func GetClientApi() {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-			msg.ReplyToMessageID = update.Message.MessageID
+			//msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			//msg.ReplyToMessageID = update.Message.MessageID
 
-			bot.Send(msg)
+			//bot.Send(msg)
 		}
 	}
 }

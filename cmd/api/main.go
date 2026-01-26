@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"telegram/internal/application/commands"
 	"telegram/internal/domain/entities"
+	"telegram/internal/infrastructure/tg-bot-api"
+	"telegram/internal/infrastructure/config"
 	"telegram/internal/presentation/http"
 	"time"
 )
@@ -22,12 +24,20 @@ func main() {
 		log.Fatal("Что-то какая-то хуита " + err.Error())
 	}
 
+	if len(os.Args) > 1 && os.Args[1] == "test" { 
+		
+	}
+
 	// Проверить режим запуска HTTP API
 	if len(os.Args) > 1 && os.Args[1] == "serve" {
 		log.Println(os.Args[1])
 		log.Println(message.GetText())
 
-		saveWebhookCommandHandler := commands.NewSaveWebhookCommandHandler()
+		cnfg := config.LoadConfig()
+		
+		tgBotApiService := tgbotapi.NewTgBotApiService(cnfg.Telegram.BotApiToken)
+
+		saveWebhookCommandHandler := commands.NewSaveWebhookCommandHandler(tgBotApiService)
 
 		handler := http.NewHandler(saveWebhookCommandHandler)
 
@@ -35,7 +45,7 @@ func main() {
 		router.Setup()
 
 		// Запустить HTTP сервер
-		serverPort := strconv.Itoa(8082)
+		serverPort := strconv.Itoa(8088)
 		go func() {
 			if err := router.Run(serverPort); err != nil {
 				log.Fatal("FATAALLLLL")

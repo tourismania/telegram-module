@@ -14,10 +14,7 @@ type Config struct {
 }
 
 type TelegramConfig struct {
-	APIHash   string
-	APIKey    string
-	Phone     string
-	SessionID string
+	BotApiToken   string
 }
 
 type ServerConfig struct {
@@ -36,10 +33,7 @@ type LoggerConfig struct {
 func LoadConfig() Config {
 	return Config{
 		Telegram: TelegramConfig{
-			APIHash:   os.Getenv("TELEGRAM_API_HASH"),
-			APIKey:    os.Getenv("TELEGRAM_API_ID"),
-			Phone:     os.Getenv("TELEGRAM_PHONE"),
-			SessionID: os.Getenv("TELEGRAM_SESSION_ID"),
+			BotApiToken:  os.Getenv("TELEGRAM_BOT_API_TOKEN"),
 		},	
 		Server: ServerConfig{
 			Port:         getEnvInt("SERVER_PORT", 8080),

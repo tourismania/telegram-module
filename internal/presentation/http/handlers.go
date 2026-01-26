@@ -21,6 +21,7 @@ func NewHandler(
 	}
 }
 
+
 func (h *Handler) SaveWebhook(c *gin.Context) {
 	var req dto.SaveWebhooRequest
 
@@ -34,5 +35,4 @@ func (h *Handler) SaveWebhook(c *gin.Context) {
 
 	// Выполнить команду
 	h.saveWebhook.Handle(*commands.NewSaveWebhookCommand(req.CommandName))
-
 }
