@@ -45,7 +45,7 @@ func main() {
 		router.Setup()
 
 		// Запустить HTTP сервер
-		serverPort := strconv.Itoa(8088)
+		serverPort := strconv.Itoa(cnfg.Server.Port)
 		go func() {
 			if err := router.Run(serverPort); err != nil {
 				log.Fatal("FATAALLLLL")
