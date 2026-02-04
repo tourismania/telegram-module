@@ -11,6 +11,16 @@ type Config struct {
 	Telegram TelegramConfig
 	Server   ServerConfig
 	Logger   LoggerConfig
+	Database DatabaseConfig
+}
+
+type DatabaseConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DBName   string
+	SSLMode  string
 }
 
 type TelegramConfig struct {
@@ -44,6 +54,14 @@ func LoadConfig() Config {
 		Logger: LoggerConfig{
 			Level: getEnv("LOG_LEVEL", "info"),
 			JSON:  getEnvBool("LOG_JSON", false),
+		},
+		Database: DatabaseConfig{
+			Host:     getEnv("DB_HOST", "localhost"),
+			Port:     getEnvInt("DB_PORT", 5432),
+			User:     getEnv("DB_USER", "root"),
+			Password: getEnv("DB_PASSWORD", "qwerty123"),
+			DBName:   getEnv("DB_NAME", "tourismania"),
+			SSLMode:  getEnv("DB_SSL_MODE", "disable"),
 		},
 	}
 }

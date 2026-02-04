@@ -1,33 +1,13 @@
-# Telegram News Digest
+# Telegram Module
 
-[![Go Version](https://img.shields.io/badge/Go-1.22+-blue.svg)](https://golang.org/dl/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Code Style](https://img.shields.io/badge/Code%20Style-Go%20Conventions-blue.svg)](https://golang.org/doc/effective_go)
-
-Приложение для автоматического формирования дайджестов новостей из Telegram каналов за определенный период времени. Проект реализован на Golang с использованием Clean Architecture, CQRS и DDD паттернов.
+Приложение для работы с Telegram. Проект реализован на Golang с использованием Clean Architecture, CQRS и DDD паттернов.
 
 ## 🎯 Возможности
 
-- ✅ Автоматическое получение сообщений из Telegram каналов
+- ✅ Обработка webhooks из Telegram ([Telegram Bot API](https://core.telegram.org/bots/api))
 - ✅ Формирование дайджестов за произвольный период времени
-- ✅ REST API для управления дайджестами
-- ✅ CLI интерфейс для batch операций
 - ✅ Постоянное хранилище данных (PostgreSQL)
-- ✅ Структурированное логирование (Zap)
-- ✅ Docker и Docker Compose поддержка
 - ✅ Clean Architecture и CQRS паттерны
-- ✅ Полное покрытие доменной логики тестами
-
-## 📋 Требования
-
-### Минимальные требования
-- **Go**: 1.22 или выше
-- **Docker**: 20.10+
-- **Docker Compose**: 2.0+
-
-### Для локальной разработки без Docker
-- **PostgreSQL**: 14+ 
-- **Git**: последняя версия
 
 ## 🚀 Быстрый старт
 
@@ -268,22 +248,6 @@ LOG_JSON=false                   # true для продакшена
 
 ## 🐳 Docker
 
-### Запуск через Docker Compose
-
-```bash
-# Запустить все контейнеры
-make docker-up
-
-# Просмотр логов
-docker-compose logs -f app
-
-# Остановить контейнеры
-make docker-down
-
-# Пересоздать контейнеры
-docker-compose up --build
-```
-
 ### Запуск отдельного контейнера
 
 ```bash
@@ -303,51 +267,43 @@ docker run -d \
 
 ## 📊 База данных
 
-### Схема
+Приложение работает с PostgreSQL с использованием пакета `sqlx`, смотри [основную документацию](https://github.com/jmoiron/sqlx).
 
-Приложение использует PostgreSQL с следующей схемой:
+Пример работы для получения данных
 
-**channels** — Информация о Telegram каналах
-```sql
-id: BIGINT PRIMARY KEY         # Telegram channel ID
-username: VARCHAR(255)         # Username канала (@mychannel)
-title: VARCHAR(255)            # Название
-description: TEXT              # Описание
-access_hash: BIGINT            # Access hash для API
-created_at: TIMESTAMP          # Дата создания записи
-updated_at: TIMESTAMP          # Дата обновления
-```
+```go
 
-**messages** — Сообщения из каналов
-```sql
-id: BIGSERIAL PRIMARY KEY      # Первичный ключ
-channel_id: BIGINT FK          # Ссылка на канал
-text: TEXT                     # Содержание сообщения
-media_url: TEXT[]              # URLs вложенных медиа
-created_at: TIMESTAMP          # Время сообщения
-updated_at: TIMESTAMP          # Время обновления
-```
+type User struct {
+    FirstName string `db:"first_name"`
+    LastName  string `db:"last_name"`
+    Uuid string
+}
 
-**digests** — Сформированные дайджесты
-```sql
-id: BIGSERIAL PRIMARY KEY      # Первичный ключ
-channel_id: BIGINT FK          # Ссылка на канал
-summary: TEXT                  # Сводка дайджеста
-from_date: TIMESTAMP           # Начало периода
-to_date: TIMESTAMP             # Конец периода
-created_at: TIMESTAMP          # Время создания
+// Query the database, storing results in a []User (wrapped in []interface{})
+user := []User{}
+db.Select(&user, "SELECT first_name, last_name, uuid FROM users ORDER BY first_name ASC")
+fmt.Printf("%#v", user)
+
 ```
 
 ### Миграции
 
-Миграции находятся в `migrations/` и автоматически применяются при запуске через Docker Compose.
+Миграции находятся в `db/postgresql/migrations`.
 
-Для ручного применения:
+При работе с миграциями используем [пакет](https://github.com/golang-migrate/migrate).
+
+Для локальной работы с миграциями - использовать [CLI](https://github.com/golang-migrate/migrate/tree/v4.19.1/cmd/migrate).
+
+Пример создания миграции
 
 ```bash
-migrate -path migrations \
-  -database "postgres://user:password@localhost:5432/telegram_digest?sslmode=disable" \
-  up
+migrate create -ext sql -dir ./db/postgres/migrations create_table_webhooks
+```
+
+Пример запуска миграции
+
+```bash
+migrate -source file://db/postgres/migrations -database "postgresql://root:qwerty123@localhost:5432/telegram?sslmode=disable" up  
 ```
 
 ## 🧪 Тестирование
