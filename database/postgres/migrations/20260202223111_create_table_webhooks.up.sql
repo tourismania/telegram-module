@@ -1,4 +1,4 @@
-create table bot_webhooks_updates
+create table if not exists bot_webhooks_updates
 (
     update_id  bigint                              not null
         constraint bot_webhooks_updates_pk
