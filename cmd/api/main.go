@@ -30,10 +30,10 @@ func main() {
 	tgBotApiService := tgbotapi.NewTgBotApiService(cnfg.Telegram.BotApiToken)
 
 	// инициализируем commands (Cqrs)
-	saveWebhookCommandHandler := commands.NewSaveWebhookCommandHandler(tgBotApiService)
+	saveWebhookBotUpdateCommandHandler := commands.NewSaveWebhookBotUpdateCommandHandler(tgBotApiService)
 
 	// инициализируем обработчик для роутера
-	handler := http.NewHandler(saveWebhookCommandHandler)
+	handler := http.NewHandler(saveWebhookBotUpdateCommandHandler)
 
 	// инициализируем роутер
 	router := http.NewRouter(*handler)

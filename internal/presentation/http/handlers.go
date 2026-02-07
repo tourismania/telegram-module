@@ -3,26 +3,26 @@ package http
 import (
 	"net/http"
 	"telegram/internal/application/commands"
-	"telegram/internal/application/dto"
+	"telegram/internal/presentation/http/dto"
 	"github.com/gin-gonic/gin"
 )
 
 // правильнее называть именно Handler, а не контроллер, так как так принято в Go
 type Handler struct {
-	saveWebhook *commands.SaveWebhookCommandHandler
+	saveWebhookBotUpdate *commands.SaveWebhookBotUpdateCommandHandler
 }
 
 func NewHandler(
-	saveWebhookHandler *commands.SaveWebhookCommandHandler,
+	saveWebhookBotUpdateCommandHandler *commands.SaveWebhookBotUpdateCommandHandler,
 ) *Handler {
 	return &Handler{
-		saveWebhook: saveWebhookHandler,
+		saveWebhookBotUpdate: saveWebhookBotUpdateCommandHandler,
 	}
 }
 
 
 func (h *Handler) SaveWebhook(c *gin.Context) {
-	var req dto.SaveWebhooRequest
+	var req dto.SaveWebhookBotUpdateRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
@@ -33,5 +33,7 @@ func (h *Handler) SaveWebhook(c *gin.Context) {
 	}
 
 	// Выполнить команду
-	h.saveWebhook.Handle(*commands.NewSaveWebhookCommand(req.CommandName))
+	r := h.saveWebhookBotUpdate.Handle(*commands.NewSaveWebhookBotUpdateCommand(req.UpdateId, req.Message.Id))
+
+	c.JSON(http.StatusOK, &dto.SaveWebhookBotUpdateResponse{Status: r})
 }

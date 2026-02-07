@@ -25,7 +25,7 @@ func (r *Router) Setup() {
 	// API v1
 	v1 := r.engine.Group("/api/v1")
 	{
-		v1.POST("/webhook", r.handler.SaveWebhook)
+		v1.POST("/webhook/bot-update", r.handler.SaveWebhook)
 	};
 }
 
