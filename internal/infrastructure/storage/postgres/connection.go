@@ -21,6 +21,8 @@ func NewConnection(cfg config.DatabaseConfig) (*sqlx.DB, error) {
 		cfg.SSLMode,
 	)
 
+	fmt.Println(dsn)
+
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)

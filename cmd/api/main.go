@@ -10,7 +10,6 @@ import (
 	"telegram/internal/application/commands"
 	"telegram/internal/infrastructure/config"
 	"telegram/internal/infrastructure/storage/postgres"
-	"telegram/internal/infrastructure/tg-bot-api"
 	"telegram/internal/presentation/http"
 )
 
@@ -27,10 +26,13 @@ func main() {
 	defer db.Close()
 	
 	// инициализируем сервисы
-	tgBotApiService := tgbotapi.NewTgBotApiService(cnfg.Telegram.BotApiToken)
+	// tgBotApiService := tgbotapi.NewTgBotApiService(cnfg.Telegram.BotApiToken)
+
+	// инициализируем репозитории
+	botWebhookUpdateRepository := postgres.NewBotWebhookUpdateRepository(db)
 
 	// инициализируем commands (Cqrs)
-	saveWebhookBotUpdateCommandHandler := commands.NewSaveWebhookBotUpdateCommandHandler(tgBotApiService)
+	saveWebhookBotUpdateCommandHandler := commands.NewSaveBotWebhookUpdateCommandHandler(botWebhookUpdateRepository)
 
 	// инициализируем обработчик для роутера
 	handler := http.NewHandler(saveWebhookBotUpdateCommandHandler)

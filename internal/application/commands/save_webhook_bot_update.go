@@ -1,79 +1,70 @@
 package commands
 
 import (
-	"fmt"
-	"telegram/internal/infrastructure/tg-bot-api"
+	"log"
+	"telegram/internal/domain/entities"
+	"telegram/internal/domain/repositories"
+	"time"
 )
 
 // описываем объект команды
-type SaveWebhookBotUpdateCommand struct {
+type SaveBotWebhookUpdateCommand struct {
 	UpdateId int64
-	Message messageInfo 
+	Message Message 
+	BotName string
 }
 
-type messageInfo struct {
+type Message struct {
 	Date int64
-	Chat chatInfo
+	Chat Chat
 	MessageId int64
-	From fromInfo
+	From From
 	Text string
 }
 
-type chatInfo struct {
+type Chat struct {
 	LastName string
 	Id int64
 	Type string
 	FirstName string
-	UserName string
+	Username string
 }
 
-type fromInfo struct {
+type From struct {
 	LastName string
 	Id int64
 	FirstName string
-	UserName string
-}
-
-func NewSaveWebhookBotUpdateCommand(updateId int64, messageId int64) *SaveWebhookBotUpdateCommand {
-	return &SaveWebhookBotUpdateCommand{
-		UpdateId: int64(updateId),
-		Message: messageInfo{
-			Date: int64(100),
-			Chat: chatInfo{
-				LastName: "string",
-				Id: int64(100),
-				Type: "string",
-				FirstName: "string",
-				UserName: "string",
-			},
-			MessageId: messageId,
-			From: fromInfo{
-				LastName: "string",
-				Id: int64(100),
-				FirstName: "string",
-				UserName: "string",
-			},
-			Text: "string",
-		},
-	}
+	Username string
 }
 
 // описываем обработчик команды
-type SaveWebhookBotUpdateCommandHandler struct {
-	tgBotApiService *tgbotapi.TgBotApiService
+type SaveBotWebhookUpdateCommandHandler struct {
+	webhookBotUpdateRepository repositories.BotWebhookUpdateRepositoryInterface
 }
 
-func NewSaveWebhookBotUpdateCommandHandler(tgBotApiService *tgbotapi.TgBotApiService)  *SaveWebhookBotUpdateCommandHandler {
-	return &SaveWebhookBotUpdateCommandHandler{
-		tgBotApiService: tgBotApiService,
+func NewSaveBotWebhookUpdateCommandHandler(bwuri repositories.BotWebhookUpdateRepositoryInterface)  *SaveBotWebhookUpdateCommandHandler {
+	return &SaveBotWebhookUpdateCommandHandler{
+		webhookBotUpdateRepository: bwuri,
 	}
 }
 
 // метод обработчика команды
-func (handler SaveWebhookBotUpdateCommandHandler) Handle(cmd SaveWebhookBotUpdateCommand) (bool) {
+func (handler SaveBotWebhookUpdateCommandHandler) Handle(cmd *SaveBotWebhookUpdateCommand) (bool) {
+
+	ent := entities.BotWebhookUpdate{
+		UpdateId: cmd.UpdateId,
+		BotName: cmd.BotName,
+		Data: cmd.Message,
+		CreatedAt: time.Now(),
+	}
+
+	err := handler.webhookBotUpdateRepository.Save(&ent)
+
+	if (err != nil) {
+		log.Fatalln("ALARM ERROR")
+		log.Fatalln(err.Error())
+	}
 	
-	fmt.Println(cmd.UpdateId)
-	fmt.Println(cmd.Message.MessageId)
 	return true
 }
 

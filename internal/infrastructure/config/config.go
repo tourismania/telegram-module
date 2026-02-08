@@ -1,9 +1,12 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // Config содержит конфигурацию приложения
@@ -41,6 +44,14 @@ type LoggerConfig struct {
 
 // LoadConfig загружает конфигурацию из переменных окружения
 func LoadConfig() Config {
+
+	// Load the .env file
+	// The function will look for a file named ".env" in the current directory by default.
+	err := godotenv.Load()
+	if (err != nil) {
+		log.Print("Undefined env file")
+	}
+
 	return Config{
 		Telegram: TelegramConfig{
 			BotApiToken:  os.Getenv("TELEGRAM_BOT_API_TOKEN"),
@@ -56,18 +67,18 @@ func LoadConfig() Config {
 			JSON:  getEnvBool("LOG_JSON", false),
 		},
 		Database: DatabaseConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
+			Host:     getEnv("DB_HOST", ""),
 			Port:     getEnvInt("DB_PORT", 5432),
-			User:     getEnv("DB_USER", "root"),
-			Password: getEnv("DB_PASSWORD", "qwerty123"),
-			DBName:   getEnv("DB_NAME", "tourismania"),
-			SSLMode:  getEnv("DB_SSL_MODE", "disable"),
+			User:     getEnv("DB_USER", ""),
+			Password: getEnv("DB_PASSWORD", ""),
+			DBName:   getEnv("DB_NAME", ""),
+			SSLMode:  getEnv("DB_SSL_MODE", ""),
 		},
 	}
 }
 
 func getEnv(key, defaultVal string) string {
-	if value, exists := os.LookupEnv(key); exists {
+	if value := os.Getenv(key); value != "" {
 		return value
 	}
 	return defaultVal
