@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"encoding/json"
+	"strings"
 
+	"telegram/internal/domain"
 	"telegram/internal/domain/entities"
 	"telegram/internal/domain/repositories"
 
@@ -32,6 +34,14 @@ func (rep *BotWebhookUpdateRepository) Save(ent *entities.BotWebhookUpdate) erro
 			"data": string(jsonData),
 			"createdAt": ent.CreatedAt.Format("2006-01-02 15:04:05"),
     })
+
+	if (err != nil) {
+
+		if (strings.Contains(err.Error(), "duplicate key")) {
+			return domain.ErrBotWebhookUpdateAlreadyExists
+		}
+
+	}
 
 	return err
 }

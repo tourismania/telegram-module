@@ -5,6 +5,6 @@ type SaveWebhookBotUpdateResponse struct {
 }
 
 type ErrorResponse struct {
-	Error string
-	Message string
+	Error string `json:"error"`
+	Message string `json:"message"`
 }

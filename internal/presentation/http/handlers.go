@@ -69,8 +69,15 @@ func (h *Handler) SaveWebhook(c *gin.Context) {
 		BotName: botName,
 	}
 
-	// выполним команду
-	r := h.saveBotWebhookUpdate.Handle(&command)
+	res, err := h.saveBotWebhookUpdate.Handle(&command)
 
-	c.JSON(http.StatusOK, &dto.SaveWebhookBotUpdateResponse{Status: r})
+	if (err != nil) {
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Internal Server Error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, &dto.SaveWebhookBotUpdateResponse{Status: res})
 }
