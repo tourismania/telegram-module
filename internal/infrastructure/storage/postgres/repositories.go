@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"encoding/json"
 	"strings"
 
 	"telegram/internal/domain"
@@ -22,16 +21,11 @@ func NewBotWebhookUpdateRepository(db *sqlx.DB) repositories.BotWebhookUpdateRep
 
 func (rep *BotWebhookUpdateRepository) Save(ent *entities.BotWebhookUpdate) error {
 
-	jsonData, errJson := json.Marshal(ent.Data)
-	if errJson != nil {
-		return errJson
-	}
-
-	_, err := rep.db.NamedExec(`INSERT INTO bot_webhooks_updates (update_id,bot_name,data,created_at) VALUES (:updateId,:botName,:data,:createdAt)`, 
+	_, err := rep.db.NamedExec(`INSERT INTO bot_webhooks_updates (update_id,bot_name,payload,created_at) VALUES (:updateId,:botName,:payload,:createdAt)`, 
         map[string]any{
             "updateId": ent.UpdateId,
             "botName": ent.BotName,
-			"data": string(jsonData),
+			"payload": ent.Payload,
 			"createdAt": ent.CreatedAt.Format("2006-01-02 15:04:05"),
     })
 

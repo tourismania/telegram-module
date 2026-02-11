@@ -303,7 +303,7 @@ migrate create -ext sql -dir ./db/postgres/migrations create_table_webhooks
 Пример запуска миграции
 
 ```bash
-migrate -source file://db/postgres/migrations -database "postgresql://root:qwerty123@localhost:5432/telegram?sslmode=disable" up  
+migrate -source file://./database/postgres/migrations -database "postgresql://root:qwerty123@localhost:5432/telegram?sslmode=disable" up 
 ```
 
 ## 🧪 Тестирование

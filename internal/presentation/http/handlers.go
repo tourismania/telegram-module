@@ -1,8 +1,11 @@
 package http
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"telegram/internal/application/commands"
 	"telegram/internal/presentation/http/dto"
 
@@ -32,7 +35,15 @@ func NewHandler(
 func (h *Handler) SaveWebhook(c *gin.Context) {
 	var req dto.SaveWebhookBotUpdateRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
+	// Читаем тело с лимитом 1MB, так как необходимо сохранять всю информацию
+    bodyBytes, err := io.ReadAll(io.LimitReader(c.Request.Body, 1<<20))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
+        return
+    }
+    defer c.Request.Body.Close()
+
+	if err := json.Unmarshal(bodyBytes, &req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error:   "INVALID_REQUEST",
 			Message: err.Error(),
@@ -44,6 +55,12 @@ func (h *Handler) SaveWebhook(c *gin.Context) {
 	if (os.Getenv(envTelegramBotApiSecretToken) == c.GetHeader(headerTelegramBotApiSecretToken)) {
 		botName = "tourismania"
 	}
+
+		// Тело как строка (или []byte)
+    rawBody := string(bodyBytes)
+	rawBody = strings.ReplaceAll(rawBody, " ", "")  // Удалит пробелы
+	rawBody = strings.ReplaceAll(rawBody, "\n", "") // Удалит переносы
+	rawBody = strings.ReplaceAll(rawBody, "\t", "") // Удалит табуляции
 
 	// создаим команду
 	command := commands.SaveBotWebhookUpdateCommand{
@@ -67,6 +84,7 @@ func (h *Handler) SaveWebhook(c *gin.Context) {
 			},
 		},
 		BotName: botName,
+		Payload: rawBody,
 	}
 
 	res, err := h.saveBotWebhookUpdate.Handle(&command)

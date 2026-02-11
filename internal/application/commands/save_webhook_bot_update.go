@@ -12,6 +12,7 @@ type SaveBotWebhookUpdateCommand struct {
 	UpdateId int64
 	Message Message 
 	BotName string
+	Payload any
 }
 
 type Message struct {
@@ -54,7 +55,7 @@ func (handler SaveBotWebhookUpdateCommandHandler) Handle(cmd *SaveBotWebhookUpda
 	ent := entities.BotWebhookUpdate{
 		UpdateId: cmd.UpdateId,
 		BotName: cmd.BotName,
-		Data: cmd.Message,
+		Payload: cmd.Payload,
 		CreatedAt: time.Now(),
 	}
 

@@ -4,7 +4,7 @@ create table if not exists bot_webhooks_updates
         constraint bot_webhooks_updates_pk
             unique,
     bot_name   varchar(30),
-    data       json      default '{}'::jsonb       not null,
+    payload    json      default '{}'::jsonb       not null,
     created_at timestamp default current_timestamp not null
 );
 
