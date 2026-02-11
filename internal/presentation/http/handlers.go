@@ -32,7 +32,7 @@ func NewHandler(
 
 
 // сохранение вэбхуки из телеграм бота
-func (h *Handler) SaveWebhook(c *gin.Context) {
+func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 	var req dto.SaveWebhookBotUpdateRequest
 
 	// Читаем тело с лимитом 1MB, так как необходимо сохранять всю информацию

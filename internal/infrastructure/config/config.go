@@ -13,7 +13,6 @@ import (
 type Config struct {
 	Telegram TelegramConfig
 	Server   ServerConfig
-	Logger   LoggerConfig
 	Database DatabaseConfig
 }
 
@@ -37,11 +36,6 @@ type ServerConfig struct {
 	IdleTimeout  time.Duration
 }
 
-type LoggerConfig struct {
-	Level string
-	JSON  bool
-}
-
 // LoadConfig загружает конфигурацию из переменных окружения
 func LoadConfig() Config {
 
@@ -54,17 +48,13 @@ func LoadConfig() Config {
 
 	return Config{
 		Telegram: TelegramConfig{
-			BotApiToken:  os.Getenv("TELEGRAM_BOT_API_TOKEN"),
+			BotApiToken:  getEnv("TELEGRAM_BOT_API_TOKEN", ""),
 		},	
 		Server: ServerConfig{
 			Port:         getEnvInt("SERVER_PORT", 8080),
 			ReadTimeout:  time.Duration(getEnvInt("SERVER_READ_TIMEOUT", 15)) * time.Second,
 			WriteTimeout: time.Duration(getEnvInt("SERVER_WRITE_TIMEOUT", 15)) * time.Second,
 			IdleTimeout:  time.Duration(getEnvInt("SERVER_IDLE_TIMEOUT", 60)) * time.Second,
-		},
-		Logger: LoggerConfig{
-			Level: getEnv("LOG_LEVEL", "info"),
-			JSON:  getEnvBool("LOG_JSON", false),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", ""),
