@@ -23,10 +23,10 @@ func (rep *BotWebhookUpdateRepository) Save(ent *entities.BotWebhookUpdate) erro
 
 	_, err := rep.db.NamedExec(`INSERT INTO bot_webhooks_updates (update_id,bot_name,payload,created_at) VALUES (:updateId,:botName,:payload,:createdAt)`, 
         map[string]any{
-            "updateId": ent.UpdateId,
-            "botName": ent.BotName,
-			"payload": ent.Payload,
-			"createdAt": ent.CreatedAt.Format("2006-01-02 15:04:05"),
+            "updateId": ent.UpdateId(),
+            "botName": ent.BotName(),
+			"payload": ent.Payload(),
+			"createdAt": ent.CreatedAt().Format("2006-01-02 15:04:05"),
     })
 
 	if (err != nil) {

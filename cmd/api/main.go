@@ -16,10 +16,10 @@ import (
 func main() {
 
 	// подгрузим конфигурацию
-	cnfg := config.LoadConfig()
+	cfg := config.LoadConfig()
 
 	// инициализируем коннект к БД
-	db, err := postgres.NewConnection(cnfg.Database)
+	db, err := postgres.NewConnection(cfg.Database)
 	if err != nil {
 		log.Fatal("failed to connect to database", nil)
 	}
@@ -42,7 +42,7 @@ func main() {
 	router.Setup()
 
 	// Запустить HTTP сервер
-	serverPort := strconv.Itoa(cnfg.Server.Port)
+	serverPort := strconv.Itoa(cfg.Server.Port)
 	go func() {
 		if err := router.Run(serverPort); err != nil {
 			log.Fatal("Error run server")

@@ -38,14 +38,17 @@ func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 	// Читаем тело с лимитом 1MB, так как необходимо сохранять всю информацию
     bodyBytes, err := io.ReadAll(io.LimitReader(c.Request.Body, 1<<20))
     if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Failed to read body",
+			Message: err.Error(),
+		})
         return
     }
     defer c.Request.Body.Close()
 
 	if err := json.Unmarshal(bodyBytes, &req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Error:   "INVALID_REQUEST",
+			Error: "Invalid request",
 			Message: err.Error(),
 		})
 		return
@@ -87,7 +90,7 @@ func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 		Payload: rawBody,
 	}
 
-	res, err := h.saveBotWebhookUpdate.Handle(&command)
+	err = h.saveBotWebhookUpdate.Handle(command)
 
 	if (err != nil) {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
@@ -97,5 +100,5 @@ func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &dto.SaveWebhookBotUpdateResponse{Status: res})
+	c.JSON(http.StatusOK, &dto.SaveWebhookBotUpdateResponse{Status: true})
 }

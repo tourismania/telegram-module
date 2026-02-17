@@ -50,21 +50,21 @@ func NewSaveBotWebhookUpdateCommandHandler(bwuri repositories.BotWebhookUpdateRe
 }
 
 // метод обработчика команды
-func (handler SaveBotWebhookUpdateCommandHandler) Handle(cmd *SaveBotWebhookUpdateCommand) (bool, error) {
+func (handler SaveBotWebhookUpdateCommandHandler) Handle(cmd SaveBotWebhookUpdateCommand) (error) {
 
-	ent := entities.BotWebhookUpdate{
-		UpdateId: cmd.UpdateId,
-		BotName: cmd.BotName,
-		Payload: cmd.Payload,
-		CreatedAt: time.Now(),
-	}
+	ent := entities.NewBookWebhookUpdate(
+		cmd.UpdateId,
+		cmd.BotName,
+		cmd.Payload,
+		time.Now(),
+	)
 
-	err := handler.webhookBotUpdateRepository.Save(&ent)
+	err := handler.webhookBotUpdateRepository.Save(ent)
 
 	if (err != nil) {
 		log.Println("Error: " + err.Error())
 	}
 	
-	return true, err
+	return err
 }
 
