@@ -12,16 +12,17 @@ import (
 
 type BotWebhookUpdateRepository struct {
 	db *sqlx.DB
-	repositories.BotWebhookUpdateRepositoryInterface
 }
+// проверит соответствие интерфейсу в compile-time
+var _ repositories.BotWebhookUpdateRepositoryInterface = (*BotWebhookUpdateRepository)(nil)
 
 func NewBotWebhookUpdateRepository(db *sqlx.DB) repositories.BotWebhookUpdateRepositoryInterface {
 	return &BotWebhookUpdateRepository{db: db}
 }
 
-func (rep *BotWebhookUpdateRepository) Save(ent *entities.BotWebhookUpdate) error {
+func (r *BotWebhookUpdateRepository) Save(ent entities.BotWebhookUpdate) error {
 
-	_, err := rep.db.NamedExec(`INSERT INTO bot_webhooks_updates (update_id,bot_name,payload,created_at) VALUES (:updateId,:botName,:payload,:createdAt)`, 
+	_, err := r.db.NamedExec(`INSERT INTO bot_webhooks_updates (update_id,bot_name,payload,created_at) VALUES (:updateId,:botName,:payload,:createdAt)`, 
         map[string]any{
             "updateId": ent.UpdateId(),
             "botName": ent.BotName(),
@@ -30,11 +31,9 @@ func (rep *BotWebhookUpdateRepository) Save(ent *entities.BotWebhookUpdate) erro
     })
 
 	if (err != nil) {
-
 		if (strings.Contains(err.Error(), "duplicate key")) {
 			return domain.ErrBotWebhookUpdateAlreadyExists
 		}
-
 	}
 
 	return err

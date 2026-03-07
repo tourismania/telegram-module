@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"telegram/internal/application/commands"
+	"telegram/internal/application/commands/save_webhook_bot_update"
 	"telegram/internal/presentation/http/dto"
 
 	"github.com/gin-gonic/gin"
@@ -19,11 +19,11 @@ const (
 
 // правильнее называть именно Handler, а не контроллер, так как так принято в Go
 type Handler struct {
-	saveBotWebhookUpdate *commands.SaveBotWebhookUpdateCommandHandler
+	saveBotWebhookUpdate *save_webhook_bot_update.Handler
 }
 
 func NewHandler(
-	saveWebhookBotUpdateCommandHandler *commands.SaveBotWebhookUpdateCommandHandler,
+	saveWebhookBotUpdateCommandHandler *save_webhook_bot_update.Handler,
 ) *Handler {
 	return &Handler{
 		saveBotWebhookUpdate: saveWebhookBotUpdateCommandHandler,
@@ -66,20 +66,20 @@ func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 	rawBody = strings.ReplaceAll(rawBody, "\t", "") // Удалит табуляции
 
 	// создаим команду
-	command := commands.SaveBotWebhookUpdateCommand{
+	command := save_webhook_bot_update.Command{
 		UpdateId: req.UpdateId,
-		Message: commands.Message{
+		Message: save_webhook_bot_update.Message{
 			Date: req.Message.Date,
 			MessageId: req.Message.MessageId,
 			Text: req.Message.Text,
-			Chat: commands.Chat{
+			Chat: save_webhook_bot_update.Chat{
 				LastName: req.Message.Chat.LastName,
 				FirstName: req.Message.Chat.FirstName,
 				Id: req.Message.Chat.Id,
 				Type: req.Message.Chat.Type,
 				Username: req.Message.Chat.Username,
 			},
-			From: commands.From{
+			From: save_webhook_bot_update.From{
 				LastName: req.Message.From.LastName,
 				FirstName: req.Message.From.FirstName,
 				Id: req.Message.From.Id,

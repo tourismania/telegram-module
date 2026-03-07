@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
-	"telegram/internal/application/commands"
+	"telegram/internal/application/commands/save_webhook_bot_update"
 	"telegram/internal/infrastructure/config"
 	"telegram/internal/infrastructure/storage/postgres"
 	"telegram/internal/presentation/http"
@@ -32,7 +32,7 @@ func main() {
 	botWebhookUpdateRepository := postgres.NewBotWebhookUpdateRepository(db)
 
 	// инициализируем commands (Cqrs)
-	saveWebhookBotUpdateCommandHandler := commands.NewSaveBotWebhookUpdateCommandHandler(botWebhookUpdateRepository)
+	saveWebhookBotUpdateCommandHandler := save_webhook_bot_update.NewHandler(botWebhookUpdateRepository)
 
 	// инициализируем обработчик для роутера
 	handler := http.NewHandler(saveWebhookBotUpdateCommandHandler)

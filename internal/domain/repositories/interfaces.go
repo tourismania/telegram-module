@@ -5,5 +5,5 @@ import (
 )
 
 type BotWebhookUpdateRepositoryInterface interface {
-	Save(*entities.BotWebhookUpdate) error
+	Save(entities.BotWebhookUpdate) error
 }

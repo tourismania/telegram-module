@@ -9,24 +9,24 @@ type BotWebhookUpdate struct {
 	createAt time.Time
 }
 
-func (ent BotWebhookUpdate) UpdateId() int64 {
-	return ent.updateId
+func (b BotWebhookUpdate) UpdateId() int64 {
+	return b.updateId
 }
 
-func (ent BotWebhookUpdate) BotName() string {
-	return ent.botName
+func (b BotWebhookUpdate) BotName() string {
+	return b.botName
 }
 
-func (ent BotWebhookUpdate) Payload() any {
-	return ent.payload
+func (b BotWebhookUpdate) Payload() any {
+	return b.payload
 }
 
-func (ent BotWebhookUpdate) CreatedAt() time.Time {
-	return ent.createAt
+func (b BotWebhookUpdate) CreatedAt() time.Time {
+	return b.createAt
 }
 
-func NewBookWebhookUpdate(updateId int64, botName string, payload any, createdAt time.Time) *BotWebhookUpdate {
-	return &BotWebhookUpdate{
+func NewBookWebhookUpdate(updateId int64, botName string, payload any, createdAt time.Time) BotWebhookUpdate {
+	return BotWebhookUpdate{
 		updateId: updateId,
 		botName: botName,
 		payload: payload,

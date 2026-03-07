@@ -17,6 +17,7 @@ func NewTgBotApiService(t string) *TgBotApiService {
 }
 
 func (srvc *TgBotApiService) PrintUpdates() {
+	// TODO: как-будто это должно инициализироваться 1 раз при запуске приложения, а не каждый раз при вызове PrintUpdates, но я не смотрела что там внутри
 	bot, err := tgbotapiv5.NewBotAPI(srvc.token)
 	if err != nil {
 		log.Panic(err)
