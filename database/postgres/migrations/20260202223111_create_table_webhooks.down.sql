@@ -1,0 +1,1 @@
+drop table if exists bot_webhooks_updates;
