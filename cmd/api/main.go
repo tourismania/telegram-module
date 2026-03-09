@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"os/signal"
@@ -9,6 +8,7 @@ import (
 	"syscall"
 	"telegram/internal/application/commands/save_webhook_bot_update"
 	"telegram/internal/infrastructure/config"
+	"telegram/internal/infrastructure/logger"
 	"telegram/internal/infrastructure/storage/postgres"
 	"telegram/internal/presentation/http"
 )
@@ -18,10 +18,16 @@ func main() {
 	// подгрузим конфигурацию
 	cfg := config.LoadConfig()
 
-	// инициализируем коннект к БД
-	db, err := postgres.NewConnection(cfg.Database)
+	// инициалиризуем logger
+	logg, err := logger.NewLogger(cfg.Logger.LogLevel)
 	if err != nil {
-		log.Fatal("failed to connect to database", nil)
+		logg.Fatal(err.Error())
+	}
+
+	// инициализируем коннект к БД
+	db, err := postgres.NewConnection(cfg.Database, logg)
+	if err != nil {
+		logg.Fatal("failed to connect to database: " + err.Error())
 	}
 	defer db.Close()
 	
@@ -32,10 +38,13 @@ func main() {
 	botWebhookUpdateRepository := postgres.NewBotWebhookUpdateRepository(db)
 
 	// инициализируем commands (Cqrs)
-	saveWebhookBotUpdateCommandHandler := save_webhook_bot_update.NewHandler(botWebhookUpdateRepository)
+	saveWebhookBotUpdateCommandHandler := save_webhook_bot_update.NewHandler(botWebhookUpdateRepository, logg)
 
 	// инициализируем обработчик для роутера
-	handler := http.NewHandler(saveWebhookBotUpdateCommandHandler)
+	handler := http.NewHandler(
+		saveWebhookBotUpdateCommandHandler,
+		cfg.Telegram,
+	)
 
 	// инициализируем роутер
 	router := http.NewRouter(*handler)
@@ -45,8 +54,7 @@ func main() {
 	serverPort := strconv.Itoa(cfg.Server.Port)
 	go func() {
 		if err := router.Run(serverPort); err != nil {
-			log.Fatal("Error run server")
-			log.Fatalln(err)
+			logg.Fatal("Error run server: " + err.Error())
 		}
 	}()
 
@@ -55,6 +63,5 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	<-sigChan
 
-	log.Println("shutting down server", nil)
-	
+	logg.Info("shutting down server")
 }

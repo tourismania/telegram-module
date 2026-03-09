@@ -47,6 +47,7 @@ CQRS реализация:
 - **Telegram Bot Api Service**: Интеграция с Telegram Bot API
 - **Storage PostgreSQL Repository**: Слой доступа к данным
 - **Config**: Управление конфигурацией приложения
+- **Logger**: Управление логированием
 
 #### 4. **Presentation Layer** (`internal/presentation/`)
 Адаптеры входных точек:

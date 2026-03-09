@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,6 +30,5 @@ func (r *Router) Setup() {
 
 // Run запускает HTTP сервер
 func (r *Router) Run(port string) error {
-	log.Println("starting HTTP server on " + port)
 	return r.engine.Run(":" + port)
 }

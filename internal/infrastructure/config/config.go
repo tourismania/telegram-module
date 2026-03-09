@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -14,6 +13,7 @@ type Config struct {
 	Telegram TelegramConfig
 	Server   ServerConfig
 	Database DatabaseConfig
+	Logger LoggerConfig
 }
 
 type DatabaseConfig struct {
@@ -36,15 +36,16 @@ type ServerConfig struct {
 	IdleTimeout  time.Duration
 }
 
+type LoggerConfig struct {
+	LogLevel string
+}
+
 // LoadConfig загружает конфигурацию из переменных окружения
 func LoadConfig() Config {
 
 	// Load the .env file
 	// The function will look for a file named ".env" in the current directory by default.
-	err := godotenv.Load()
-	if (err != nil) {
-		log.Print("Undefined env file")
-	}
+	godotenv.Load()
 
 	return Config{
 		Telegram: TelegramConfig{
@@ -63,6 +64,9 @@ func LoadConfig() Config {
 			Password: getEnv("DB_PASSWORD", ""),
 			DBName:   getEnv("DB_NAME", ""),
 			SSLMode:  getEnv("DB_SSL_MODE", ""),
+		},
+		Logger: LoggerConfig{
+			LogLevel: getEnv("LOG_LEVEL", "debug"),
 		},
 	}
 }

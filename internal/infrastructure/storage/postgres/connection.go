@@ -7,10 +7,11 @@ import (
 	_ "github.com/lib/pq"
 
 	"telegram/internal/infrastructure/config"
+	"telegram/internal/infrastructure/logger"
 )
 
 // NewConnection создает новое соединение с PostgreSQL
-func NewConnection(cfg config.DatabaseConfig) (*sqlx.DB, error) {
+func NewConnection(cfg config.DatabaseConfig, logg logger.Logger) (*sqlx.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host,
@@ -23,11 +24,13 @@ func NewConnection(cfg config.DatabaseConfig) (*sqlx.DB, error) {
 
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		logg.Error("failed to open database:" + err.Error())
+		return nil, err
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+		logg.Error("failed to ping database:" + err.Error())
+		return nil, err
 	}
 
 	return db, nil

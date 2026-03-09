@@ -4,29 +4,30 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"telegram/internal/application/commands/save_webhook_bot_update"
+	"telegram/internal/infrastructure/config"
 	"telegram/internal/presentation/http/dto"
-
 	"github.com/gin-gonic/gin"
 )
 
 const (
 	headerTelegramBotApiSecretToken = "X-Telegram-Bot-Api-Secret-Token"
-	envTelegramBotApiSecretToken = "TELEGRAM_BOT_API_SECRET_TOKEN"
 )
 
 // правильнее называть именно Handler, а не контроллер, так как так принято в Go
 type Handler struct {
 	saveBotWebhookUpdate *save_webhook_bot_update.Handler
+	telegramConfig config.TelegramConfig
 }
 
 func NewHandler(
 	saveWebhookBotUpdateCommandHandler *save_webhook_bot_update.Handler,
+	telegramConfig config.TelegramConfig,
 ) *Handler {
 	return &Handler{
 		saveBotWebhookUpdate: saveWebhookBotUpdateCommandHandler,
+		telegramConfig: telegramConfig,
 	}
 }
 
@@ -55,7 +56,7 @@ func (h *Handler) SaveWebhookBotUpdate(c *gin.Context) {
 	}
 
 	botName := "undefined";
-	if (os.Getenv(envTelegramBotApiSecretToken) == c.GetHeader(headerTelegramBotApiSecretToken)) {
+	if (h.telegramConfig.BotApiToken == c.GetHeader(headerTelegramBotApiSecretToken)) {
 		botName = "tourismania"
 	}
 

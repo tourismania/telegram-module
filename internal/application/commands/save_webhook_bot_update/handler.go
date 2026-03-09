@@ -1,20 +1,22 @@
 package save_webhook_bot_update
 
 import (
-	"log"
 	"telegram/internal/domain/entities"
 	"telegram/internal/domain/repositories"
+	"telegram/internal/infrastructure/logger"
 	"time"
 )
 
 // описываем обработчик команды
 type Handler struct {
 	webhookBotUpdateRepository repositories.BotWebhookUpdateRepositoryInterface
+	logg logger.Logger
 }
 
-func NewHandler(rep repositories.BotWebhookUpdateRepositoryInterface) *Handler {
+func NewHandler(rep repositories.BotWebhookUpdateRepositoryInterface, logg logger.Logger) *Handler {
 	return &Handler{
 		webhookBotUpdateRepository: rep,
+		logg: logg,
 	}
 }
 
@@ -30,8 +32,8 @@ func (h *Handler) Handle(cmd Command) (error) {
 
 	err := h.webhookBotUpdateRepository.Save(ent)
 
-	if (err != nil) {
-		log.Println("Error: " + err.Error())
+	if err != nil {
+		h.logg.Error(err.Error())
 	}
 	
 	return err
